@@ -1,0 +1,479 @@
+import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import useAuth from "../../hooks/useAuth";
+import { useOwnerStore } from "../../store/ownerStore";
+import { BookingService } from "@/services/bookingService";
+import OwnerStatistics from "../../components/owner/OwnerStatistics";
+import EarningsCard from "../../components/owner/EarningsCard";
+import BookingRequestCard from "../../components/owner/BookingRequestCard";
+import { 
+    ShieldCheck, 
+    ShieldAlert, 
+    PlusCircle, 
+    FileText, 
+    CreditCard, 
+    Building2,
+    User, 
+    ListTodo, 
+    Clock, 
+    ArrowRight,
+    TrendingUp,
+    CheckCircle2,
+    AlertTriangle,
+    Inbox
+} from "lucide-react";
+
+export default function OwnerDashboard() {
+    const navigate = useNavigate();
+    const { user } = useAuth();
+    const dashboard = useOwnerStore((s) => s.dashboard);
+    const loading = useOwnerStore((s) => s.loading);
+    const error = useOwnerStore((s) => s.error);
+    const fetchDashboard = useOwnerStore((s) => s.fetchDashboard);
+
+    // Bank & Settlement config from persistent storage
+    const bankConfig = useMemo(() => {
+        try {
+            const saved = localStorage.getItem("smartbike_owner_settings_config");
+            if (saved) {
+                return JSON.parse(saved);
+            }
+        } catch {
+            // ignore
+        }
+        return {
+            bankName: "HDFC Bank Ltd",
+            accountHolderName: user?.fullName || "Rajesh Sharma",
+            accountNumber: "50100492817291",
+            ifscCode: "HDFC0001234",
+            upiId: "rajesh.sharma@okhdfcbank",
+            payoutFrequency: "instant",
+            minPayoutThreshold: 500,
+        };
+    }, [user]);
+
+    const maskedAccount = useMemo(() => {
+        const num = bankConfig.accountNumber || "50100492817291";
+        if (num.length <= 4) return num;
+        return `•••• •••• ${num.slice(-4)}`;
+    }, [bankConfig.accountNumber]);
+
+    const handleNavigateToBankEdit = () => {
+        navigate("/owner/settings?tab=PAYOUTS&editBank=true", { 
+            state: { tab: "PAYOUTS", openBankModal: true } 
+        });
+    };
+
+    useEffect(() => {
+        fetchDashboard(true);
+        const timer = setInterval(() => {
+            fetchDashboard(true);
+        }, 30000);
+        return () => clearInterval(timer);
+    }, [fetchDashboard]);
+
+    const [verificationInfo, setVerificationInfo] = useState<{
+        aadhaarVerified: boolean;
+        aadhaarStatus: string;
+    }>({
+        aadhaarVerified: false,
+        aadhaarStatus: "NOT_SUBMITTED",
+    });
+
+    useEffect(() => {
+        if (user?.id) {
+            BookingService.getVerificationDetails(Number(user.id))
+                .then((details: any) => {
+                    setVerificationInfo({
+                        aadhaarVerified: details.aadhaarVerified,
+                        aadhaarStatus: details.aadhaarData?.status || (details.aadhaarVerified ? "VERIFIED" : "NOT_SUBMITTED"),
+                    });
+                })
+                .catch(() => {});
+        }
+    }, [user?.id]);
+
+    if (loading && !dashboard) {
+        return (
+            <div className="space-y-8 pb-10 text-foreground animate-pulse">
+                {/* Header Skeleton */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-card border border-border p-6 sm:p-8 rounded-3xl shadow-xs">
+                    <div className="flex items-center gap-4 sm:gap-6 w-full">
+                        <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl bg-muted shrink-0"></div>
+                        <div className="space-y-2 w-1/2">
+                            <div className="h-6 w-48 bg-muted rounded"></div>
+                            <div className="h-4 w-64 bg-muted rounded"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div className="lg:col-span-2 space-y-8">
+                        {/* Stats Skeleton */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {[1, 2, 3, 4].map((i) => (
+                                <div key={i} className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-3">
+                                    <div className="h-3 w-16 bg-muted rounded"></div>
+                                    <div className="h-8 w-24 bg-muted rounded"></div>
+                                </div>
+                            ))}
+                        </div>
+                        {/* Earnings Skeleton */}
+                        <div className="rounded-2xl border border-border bg-card p-6 shadow-xs h-48 bg-muted/40"></div>
+                        {/* Bookings Skeleton */}
+                        <div className="rounded-2xl border border-border bg-card p-6 shadow-xs h-64 bg-muted/40"></div>
+                    </div>
+                    <div className="space-y-8">
+                        <div className="rounded-2xl border border-border bg-card p-6 shadow-xs h-32 bg-muted/40"></div>
+                        <div className="rounded-2xl border border-border bg-card p-6 shadow-xs h-48 bg-muted/40"></div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (error && !dashboard) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] bg-card border border-border rounded-3xl p-8 sm:p-12 text-center shadow-xs max-w-2xl mx-auto my-10">
+                <div className="p-4 bg-destructive/10 text-destructive rounded-full mb-4">
+                    <AlertTriangle className="h-10 w-10" />
+                </div>
+                <h2 className="text-xl font-bold text-foreground">Failed to Load Dashboard</h2>
+                <p className="text-sm text-muted-foreground mt-2 max-w-md leading-relaxed">
+                    {typeof error === "string" ? error : "An unexpected error occurred while communicating with the owner dashboard API."}
+                </p>
+                <button
+                    type="button"
+                    onClick={() => fetchDashboard(true)}
+                    className="mt-6 px-6 py-2.5 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded-xl hover:opacity-90 active:scale-95 transition-all cursor-pointer shadow-md shadow-primary/30"
+                >
+                    Retry Loading
+                </button>
+            </div>
+        );
+    }
+
+    if (!dashboard) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] bg-card border border-border rounded-3xl p-8 sm:p-12 text-center shadow-xs max-w-2xl mx-auto my-10">
+                <div className="p-4 bg-muted text-muted-foreground rounded-full mb-4">
+                    <Inbox className="h-10 w-10" />
+                </div>
+                <h2 className="text-xl font-bold text-foreground">No Dashboard Data Available</h2>
+                <p className="text-sm text-muted-foreground mt-2 max-w-md leading-relaxed">
+                    We couldn't retrieve any fleet statistics or profile records for this account. Make sure you are registered as an owner.
+                </p>
+                <button
+                    type="button"
+                    onClick={() => fetchDashboard(true)}
+                    className="mt-6 px-6 py-2.5 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded-xl hover:opacity-90 active:scale-95 transition-all cursor-pointer"
+                >
+                    Refresh
+                </button>
+            </div>
+        );
+    }
+
+    // Extract first name for a warmer welcome message
+    const firstName = user?.firstName || user?.fullName?.split(" ")[0] || "Owner";
+    
+    // Get initials for avatar fallback
+    const getInitials = () => {
+        if (user?.fullName) {
+            const parts = user.fullName.split(" ");
+            return (parts[0]?.[0] || "") + (parts[1]?.[0] || "");
+        }
+        return "OW";
+    };
+
+    const isAadhaarVerified = Boolean(dashboard?.aadhaarVerified || verificationInfo.aadhaarVerified);
+    const isRcVerified = Boolean(dashboard?.rcVerified);
+
+    const aadhaarStatus = isAadhaarVerified 
+        ? "VERIFIED" 
+        : (verificationInfo.aadhaarStatus && verificationInfo.aadhaarStatus !== "NOT_SUBMITTED" 
+            ? verificationInfo.aadhaarStatus 
+            : (dashboard?.aadhaarStatus || "NOT SUBMITTED"));
+
+    const rcStatus = isRcVerified 
+        ? "VERIFIED" 
+        : (dashboard?.rcStatus || "NOT SUBMITTED");
+
+    // Derived recent activities
+    const activities = [
+        {
+            id: 1,
+            title: "Aadhaar Identity Status",
+            desc: isAadhaarVerified 
+                ? "Identity verified successfully under UIDAI record."
+                : aadhaarStatus === "PENDING"
+                ? "Aadhaar document submitted and pending verification."
+                : "Aadhaar verification is pending. Please upload card.",
+            time: isAadhaarVerified ? "VERIFIED" : aadhaarStatus,
+            icon: isAadhaarVerified ? ShieldCheck : ShieldAlert,
+            color: isAadhaarVerified ? "text-emerald-500 bg-emerald-500/10" : "text-amber-500 bg-amber-500/10"
+        },
+        {
+            id: 2,
+            title: "Vehicle RC Status",
+            desc: isRcVerified 
+                ? "Vehicle Registration Certificate (RC) approved."
+                : rcStatus === "PENDING"
+                ? "RC document submitted and pending verification."
+                : "RC document upload needed to list new vehicles.",
+            time: isRcVerified ? "VERIFIED" : rcStatus,
+            icon: isRcVerified ? ShieldCheck : ShieldAlert,
+            color: isRcVerified ? "text-emerald-500 bg-emerald-500/10" : "text-amber-500 bg-amber-500/10"
+        }
+    ];
+
+    return (
+        <div className="space-y-6 sm:space-y-8 pb-10 text-foreground">
+            {/* 1. Welcome Header Section */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6 bg-card border border-border p-5 sm:p-7 lg:p-8 rounded-2xl sm:rounded-3xl shadow-xs relative overflow-hidden transition-all duration-300">
+                <div className="flex items-center gap-3.5 sm:gap-6 relative z-10 min-w-0">
+                    {/* Owner Avatar */}
+                    {user?.profileImage ? (
+                        <img 
+                            src={user.profileImage} 
+                            alt={user.fullName || "Owner Avatar"} 
+                            className="h-14 w-14 sm:h-20 sm:w-20 rounded-2xl object-cover border border-border shadow-sm shrink-0"
+                        />
+                    ) : (
+                        <div className="h-14 w-14 sm:h-20 sm:w-20 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-lg sm:text-2xl font-black border border-primary/20 shadow-inner shrink-0 uppercase">
+                            {getInitials()}
+                        </div>
+                    )}
+                    
+                    <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                            <h1 className="text-xl sm:text-3xl font-black tracking-tight text-foreground truncate">
+                                Welcome back, {firstName}! 👋
+                            </h1>
+                            {isAadhaarVerified && isRcVerified && (
+                                <span className="p-0.5 rounded-full bg-green-500/10 text-green-500 shrink-0" title="Fully Verified Account">
+                                    <ShieldCheck className="h-4 w-4 sm:h-5 sm:w-5" />
+                                </span>
+                            )}
+                        </div>
+                        <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1 font-medium leading-relaxed">
+                            Here's what is happening with your bike rental fleet today.
+                        </p>
+                    </div>
+                </div>
+
+                {/* Quick Summary Badge */}
+                <div className="flex items-center gap-3 bg-muted/40 border border-border/80 px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl md:self-center self-start relative z-10 shrink-0">
+                    <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                    <div>
+                        <p className="text-[9px] sm:text-[10px] text-muted-foreground font-bold uppercase tracking-wider">Fleet Status</p>
+                        <p className="text-xs font-bold text-foreground">Active & Earning</p>
+                    </div>
+                </div>
+
+                {/* Subtle Decorative Gradient Glow */}
+                <div className="absolute right-0 bottom-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+            </div>
+
+            {/* Payout & Settlement Quick Action Card */}
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4 sm:p-6 rounded-2xl bg-card border border-border shadow-xs relative overflow-hidden">
+                <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
+                    <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/20 shrink-0 mt-0.5 sm:mt-0">
+                        <Building2 className="h-5 w-5" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                            <h3 className="text-xs sm:text-base font-bold text-foreground truncate">
+                                Active Payout Account: {bankConfig.bankName || "HDFC Bank Ltd"}
+                            </h3>
+                            <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[9px] sm:text-[10px] font-semibold text-primary border border-primary/20">
+                                <CheckCircle2 className="h-3 w-3" />
+                                KYC Verified
+                            </span>
+                        </div>
+                        <p className="text-[11px] sm:text-xs text-muted-foreground mt-0.5 leading-relaxed break-words">
+                            Account: <span className="font-mono font-bold text-foreground">{maskedAccount}</span>
+                            <span className="mx-1">•</span>
+                            Beneficiary: <span className="font-semibold text-foreground">{bankConfig.accountHolderName}</span>
+                            <span className="mx-1">•</span>
+                            IFSC: <span className="font-mono font-bold text-primary">{bankConfig.ifscCode || "HDFC0001234"}</span>
+                            {bankConfig.upiId && (
+                                <>
+                                    <span className="mx-1">•</span>
+                                    UPI: <span className="font-mono text-foreground">{bankConfig.upiId}</span>
+                                </>
+                            )}
+                            <span className="mx-1">•</span>
+                            Frequency: <span className="capitalize font-semibold text-primary">{bankConfig.payoutFrequency || "Instant"}</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-2.5 w-full md:w-auto shrink-0">
+                    <button
+                        type="button"
+                        onClick={handleNavigateToBankEdit}
+                        className="w-full md:w-auto inline-flex items-center justify-center gap-1.5 rounded-xl bg-primary hover:opacity-90 text-primary-foreground px-4 py-2.5 text-xs font-bold transition cursor-pointer shadow-xs active:scale-95"
+                    >
+                        <Building2 className="h-3.5 w-3.5" />
+                        <span>Edit Bank / UPI Details</span>
+                    </button>
+                </div>
+            </div>
+
+            {/* Main Grid: Statistics & Booking Details vs Quick Actions & Verification */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+                
+                {/* Left Side: Stats, Earnings & Booking requests (Takes 2 columns on large screen) */}
+                <div className="lg:col-span-2 space-y-8">
+                    {/* 2. Statistics Cards */}
+                    <OwnerStatistics />
+
+                    {/* 3. Earnings Card */}
+                    <EarningsCard />
+
+                    {/* 5. Pending Booking Requests */}
+                    <BookingRequestCard />
+                </div>
+
+                {/* Right Side: Verification status, Quick actions & Recent Activities (Takes 1 column) */}
+                <div className="space-y-8">
+                    
+                    {/* Account Verification Card (Matches Customer Dashboard style) */}
+                    <div className="rounded-2xl border border-border bg-card p-6 shadow-xs space-y-4">
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-sm font-bold text-foreground">Identity & RC Status</h3>
+                            <ShieldCheck className="h-5 w-5 text-emerald-500" />
+                        </div>
+
+                        <div className="space-y-3 text-xs">
+                            <div className="flex items-center justify-between p-3 rounded-xl bg-muted/40 border border-border">
+                                <span className="font-semibold text-foreground">Registration Certificate (RC)</span>
+                                <span className={`font-extrabold px-2 py-0.5 rounded-md ${
+                                    isRcVerified
+                                        ? "text-emerald-600 bg-emerald-500/10"
+                                        : rcStatus === "PENDING"
+                                        ? "text-amber-600 bg-amber-500/10"
+                                        : rcStatus === "REJECTED"
+                                        ? "text-destructive bg-destructive/10"
+                                        : "text-amber-600 bg-amber-500/10"
+                                }`}>
+                                    {isRcVerified ? "VERIFIED" : (rcStatus || "NOT SUBMITTED")}
+                                </span>
+                            </div>
+
+                            <div className="flex items-center justify-between p-3 rounded-xl bg-muted/40 border border-border">
+                                <span className="font-semibold text-foreground">Aadhaar Identity</span>
+                                <span className={`font-extrabold px-2 py-0.5 rounded-md ${
+                                    isAadhaarVerified
+                                        ? "text-emerald-600 bg-emerald-500/10"
+                                        : aadhaarStatus === "PENDING"
+                                        ? "text-amber-600 bg-amber-500/10"
+                                        : aadhaarStatus === "REJECTED"
+                                        ? "text-destructive bg-destructive/10"
+                                        : "text-amber-600 bg-amber-500/10"
+                                }`}>
+                                    {isAadhaarVerified ? "VERIFIED" : (aadhaarStatus || "NOT SUBMITTED")}
+                                </span>
+                            </div>
+                        </div>
+
+                        <Link
+                            to="/owner/documents"
+                            className="block w-full text-center rounded-xl border border-border py-2 text-xs font-bold text-foreground hover:bg-muted transition"
+                        >
+                            View Verification Documents
+                        </Link>
+                    </div>
+
+                    {/* 6. Quick Actions Grid */}
+                    <div className="rounded-2xl border border-border bg-card p-6 shadow-xs">
+                        <h2 className="text-base font-bold text-foreground mb-4">
+                            Quick Actions
+                        </h2>
+                        
+                        <div className="grid grid-cols-2 gap-3">
+                            <Link 
+                                to="/owner/add-bike" 
+                                className="flex flex-col items-center justify-center p-4 bg-muted/20 hover:bg-primary/10 border border-border rounded-xl text-center transition-all duration-200 group focus:outline-none"
+                            >
+                                <PlusCircle className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
+                                <span className="text-[11px] font-bold mt-2 text-foreground">Add Bike</span>
+                            </Link>
+
+                            <Link 
+                                to="/owner/bookings" 
+                                className="flex flex-col items-center justify-center p-4 bg-muted/20 hover:bg-primary/10 border border-border rounded-xl text-center transition-all duration-200 group focus:outline-none"
+                            >
+                                <ListTodo className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
+                                <span className="text-[11px] font-bold mt-2 text-foreground">Bookings</span>
+                            </Link>
+
+                            <Link 
+                                to="/owner/documents" 
+                                className="flex flex-col items-center justify-center p-4 bg-muted/20 hover:bg-primary/10 border border-border rounded-xl text-center transition-all duration-200 group focus:outline-none"
+                            >
+                                <FileText className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
+                                <span className="text-[11px] font-bold mt-2 text-foreground">Upload Docs</span>
+                            </Link>
+
+                            <Link 
+                                to="/owner/payments" 
+                                className="flex flex-col items-center justify-center p-4 bg-muted/20 hover:bg-primary/10 border border-border rounded-xl text-center transition-all duration-200 group focus:outline-none"
+                            >
+                                <CreditCard className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
+                                <span className="text-[11px] font-bold mt-2 text-foreground">Earnings Logs</span>
+                            </Link>
+
+                            <Link 
+                                to="/owner/profile" 
+                                className="col-span-2 flex items-center justify-center gap-2 p-3 bg-muted/20 hover:bg-primary/10 border border-border rounded-xl text-center transition-all duration-200 group focus:outline-none"
+                            >
+                                <User className="h-4.5 w-4.5 text-primary group-hover:scale-110 transition-transform" />
+                                <span className="text-[11px] font-bold text-foreground">Manage Owner Profile</span>
+                            </Link>
+                        </div>
+                    </div>
+
+                    {/* 7. Recent Activity Section */}
+                    <div className="rounded-2xl border border-border bg-card p-6 shadow-xs">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-base font-bold text-foreground flex items-center gap-1.5">
+                                <Clock className="h-5 w-5 text-primary" />
+                                Recent Activity
+                            </h2>
+                        </div>
+                        
+                        <div className="space-y-4">
+                            {activities.map((act) => {
+                                const Icon = act.icon;
+                                return (
+                                    <div key={act.id} className="flex gap-3 items-start text-xs border-l border-border pl-4 relative ml-2">
+                                        {/* Dynamic bullet indicator */}
+                                        <div className={`absolute -left-3 top-0.5 p-1 rounded-full border border-border ${act.color}`}>
+                                            {Icon ? <Icon className="h-3 w-3" /> : null}
+                                        </div>
+                                        
+                                        <div className="space-y-0.5">
+                                            <h4 className="font-bold text-foreground">
+                                                {act.title}
+                                            </h4>
+                                            <p className="text-[11px] text-muted-foreground leading-relaxed">
+                                                {act.desc}
+                                            </p>
+                                            <span className="text-[9px] font-semibold text-muted-foreground/70 block pt-0.5">
+                                                {act.time}
+                                            </span>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    );
+}

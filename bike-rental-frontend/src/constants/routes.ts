@@ -1,0 +1,50 @@
+export const ROUTES = {
+  HOME: "/",
+  BIKES: "/bikes",
+  ABOUT: "/about",
+  CONTACT: "/contact",
+  LOGIN: "/login",
+  REGISTER: "/register",
+  VERIFY_OTP: "/verify-otp",
+  FORGOT_PASSWORD: "/forgot-password",
+  RESET_PASSWORD: "/reset-password",
+  UNAUTHORIZED: "/unauthorized",
+
+  CUSTOMER: {
+    BASE: "/customer",
+    DASHBOARD: "/customer/dashboard",
+    BIKES: "/customer/bikes",
+    BIKE_DETAILS: (id: number | string) => `/customer/bikes/${id}`,
+    BOOKINGS: "/customer/bookings",
+    PROFILE: "/customer/profile",
+    SETTINGS: "/customer/settings",
+
+    LIVE_GPS: "/customer/live-gps",
+    RIDE_TRACKING: "/customer/ride-tracking",
+    RIDE_HISTORY: "/customer/ride-history",
+  },
+
+  OWNER: {
+    BASE: "/owner",
+    DASHBOARD: "/owner/dashboard",
+    BIKES: "/owner/bikes",
+    BIKE_DETAILS: (id: number | string) => `/owner/bikes/${id}`,
+    ADD_BIKE: "/owner/add-bike",
+    EDIT_BIKE: (id: number | string) => `/owner/edit-bike/${id}`,
+    BOOKINGS: "/owner/bookings",
+    PAYMENTS: "/owner/payments",
+    PROFILE: "/owner/profile",
+    SETTINGS: "/owner/settings",
+    TRACK_BIKE: (rideId: number | string) => `/owner/track-bike/${rideId}`,
+  },
+
+  ADMIN: {
+    BASE: "/admin",
+    DASHBOARD: "/admin/dashboard",
+    USERS: "/admin/users",
+    BIKES: "/admin/bikes",
+    PAYMENTS: "/admin/payments",
+    VERIFICATION: "/admin/verification",
+    SETTINGS: "/admin/settings",
+  },
+};

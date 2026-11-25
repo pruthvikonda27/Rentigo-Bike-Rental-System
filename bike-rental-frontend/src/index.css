@@ -1,0 +1,566 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+@view-transition {
+  navigation: auto;
+}
+
+@theme inline {
+    --font-sans: Antic, ui-sans-serif, sans-serif, system-ui;
+    --font-mono: JetBrains Mono, Courier New, monospace;
+    --font-serif: Signifier, Georgia, serif;
+    --radius: 0.35rem;
+    --tracking-tighter: calc(var(--tracking-normal) - 0.05em);
+    --tracking-tight: calc(var(--tracking-normal) - 0.025em);
+    --tracking-wide: calc(var(--tracking-normal) + 0.025em);
+    --tracking-wider: calc(var(--tracking-normal) + 0.05em);
+    --tracking-widest: calc(var(--tracking-normal) + 0.1em);
+    --tracking-normal: var(--tracking-normal);
+    --shadow-2xl: var(--shadow-2xl);
+    --shadow-xl: var(--shadow-xl);
+    --shadow-lg: var(--shadow-lg);
+    --shadow-md: var(--shadow-md);
+    --shadow: var(--shadow);
+    --shadow-sm: var(--shadow-sm);
+    --shadow-xs: var(--shadow-xs);
+    --shadow-2xs: var(--shadow-2xs);
+    --spacing: var(--spacing);
+    --letter-spacing: var(--letter-spacing);
+    --shadow-offset-y: var(--shadow-offset-y);
+    --shadow-offset-x: var(--shadow-offset-x);
+    --shadow-spread: var(--shadow-spread);
+    --shadow-blur: var(--shadow-blur);
+    --shadow-opacity: var(--shadow-opacity);
+    --color-shadow-color: var(--shadow-color);
+    --color-sidebar-ring: var(--sidebar-ring);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar: var(--sidebar);
+    --color-chart-5: var(--chart-5);
+    --color-chart-4: var(--chart-4);
+    --color-chart-3: var(--chart-3);
+    --color-chart-2: var(--chart-2);
+    --color-chart-1: var(--chart-1);
+    --color-ring: var(--ring);
+    --color-input: var(--input);
+    --color-border: var(--border);
+    --color-destructive-foreground: var(--destructive-foreground);
+    --color-destructive: var(--destructive);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent: var(--accent);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-muted: var(--muted);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary: var(--secondary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary: var(--primary);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-popover: var(--popover);
+    --color-card-foreground: var(--card-foreground);
+    --color-card: var(--card);
+    --color-foreground: var(--foreground);
+    --color-background: var(--background);
+    --radius-sm: calc(var(--radius) * 0.6);
+    --radius-md: calc(var(--radius) * 0.8);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) * 1.4);
+    --radius-2xl: calc(var(--radius) * 1.8);
+    --radius-3xl: calc(var(--radius) * 2.2);
+    --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+    --background: oklch(0.9761 0.0041 91.4461);
+    --foreground: oklch(0.2417 0.0298 269.8827);
+    --card: oklch(1.0000 0 0);
+    --card-foreground: oklch(0.2417 0.0298 269.8827);
+    --popover: oklch(1.0000 0 0);
+    --popover-foreground: oklch(0.2417 0.0298 269.8827);
+    --primary: oklch(0.6333 0.0309 154.9039);
+    --primary-foreground: oklch(1.0000 0 0);
+    --secondary: oklch(0.8596 0.0291 119.9919);
+    --secondary-foreground: oklch(0.2417 0.0298 269.8827);
+    --muted: oklch(0.9251 0.0071 88.6450);
+    --muted-foreground: oklch(0.5510 0.0234 264.3637);
+    --accent: oklch(0.8242 0.0221 136.6092);
+    --accent-foreground: oklch(0.2417 0.0298 269.8827);
+    --destructive: oklch(0.5624 0.1743 26.1433);
+    --destructive-foreground: oklch(1.0000 0 0);
+    --border: oklch(0.9251 0.0071 88.6450);
+    --input: oklch(1.0000 0 0);
+    --ring: oklch(0.6333 0.0309 154.9039);
+    --chart-1: oklch(0.6333 0.0309 154.9039);
+    --chart-2: oklch(0.7209 0.0489 120.9474);
+    --chart-3: oklch(0.6744 0.0427 136.0110);
+    --chart-4: oklch(0.5510 0.0234 264.3637);
+    --chart-5: oklch(0.9251 0.0071 88.6450);
+    --radius: 0.35rem;
+    --sidebar: oklch(0.9845 0.0026 106.4477);
+    --sidebar-foreground: oklch(0.2417 0.0298 269.8827);
+    --sidebar-primary: oklch(0.6333 0.0309 154.9039);
+    --sidebar-primary-foreground: oklch(1.0000 0 0);
+    --sidebar-accent: oklch(0.9251 0.0071 88.6450);
+    --sidebar-accent-foreground: oklch(0.2417 0.0298 269.8827);
+    --sidebar-border: oklch(0.9251 0.0071 88.6450);
+    --sidebar-ring: oklch(0.6333 0.0309 154.9039);
+    --font-sans: Antic, ui-sans-serif, sans-serif, system-ui;
+    --font-serif: Signifier, Georgia, serif;
+    --font-mono: JetBrains Mono, Courier New, monospace;
+    --shadow-color: #1a1f2e;
+    --shadow-opacity: 0.04;
+    --shadow-blur: 2px;
+    --shadow-spread: 0px;
+    --shadow-offset-x: 0px;
+    --shadow-offset-y: 1px;
+    --letter-spacing: 0em;
+    --spacing: 0.23rem;
+    --shadow-2xs: 0px 1px 2px 0px hsl(225 27.7778% 14.1176% / 0.02);
+    --shadow-xs: 0px 1px 2px 0px hsl(225 27.7778% 14.1176% / 0.02);
+    --shadow-sm: 0px 1px 2px 0px hsl(225 27.7778% 14.1176% / 0.04), 0px 1px 2px -1px hsl(225 27.7778% 14.1176% / 0.04);
+    --shadow: 0px 1px 2px 0px hsl(225 27.7778% 14.1176% / 0.04), 0px 1px 2px -1px hsl(225 27.7778% 14.1176% / 0.04);
+    --shadow-md: 0px 1px 2px 0px hsl(225 27.7778% 14.1176% / 0.04), 0px 2px 4px -1px hsl(225 27.7778% 14.1176% / 0.04);
+    --shadow-lg: 0px 1px 2px 0px hsl(225 27.7778% 14.1176% / 0.04), 0px 4px 6px -1px hsl(225 27.7778% 14.1176% / 0.04);
+    --shadow-xl: 0px 1px 2px 0px hsl(225 27.7778% 14.1176% / 0.04), 0px 8px 10px -1px hsl(225 27.7778% 14.1176% / 0.04);
+    --shadow-2xl: 0px 1px 2px 0px hsl(225 27.7778% 14.1176% / 0.10);
+    --tracking-normal: 0em;
+    --color-ink: #0b1220;
+    --color-bureau: #16305e;
+    --color-bureau-light: #1e3f7a;
+    --color-parchment: #f8f5ec;
+    --color-parchment-dim: #efe9d8;
+    --color-brass: #b1873f;
+    --color-verified: #1e7f4d;
+    --color-verified-dim: #e7f3ec;
+    --color-crimson: #b3261e;
+    --color-crimson-dim: #fbeae9;
+}
+
+.dark {
+    --background: oklch(0.1448 0 0);
+    --foreground: oklch(0.9702 0 0);
+    --card: oklch(0.1822 0 0);
+    --card-foreground: oklch(0.9702 0 0);
+    --popover: oklch(0.1822 0 0);
+    --popover-foreground: oklch(0.9702 0 0);
+    --primary: oklch(0.6333 0.0309 154.9039);
+    --primary-foreground: oklch(0 0 0);
+    --secondary: oklch(0.2178 0 0);
+    --secondary-foreground: oklch(0.9702 0 0);
+    --muted: oklch(0.2178 0 0);
+    --muted-foreground: oklch(0.7058 0 0);
+    --accent: oklch(0.3709 0.0248 153.9823);
+    --accent-foreground: oklch(0.9702 0 0);
+    --destructive: oklch(0.6368 0.2078 25.3313);
+    --destructive-foreground: oklch(1.0000 0 0);
+    --border: oklch(0.2850 0 0);
+    --input: oklch(0.1822 0 0);
+    --ring: oklch(0.6333 0.0309 154.9039);
+    --chart-1: oklch(0.6333 0.0309 154.9039);
+    --chart-2: oklch(0.7209 0.0489 120.9474);
+    --chart-3: oklch(0.6744 0.0427 136.0110);
+    --chart-4: oklch(0.5510 0.0234 264.3637);
+    --chart-5: oklch(0.5096 0.0289 152.3460);
+    --radius: 0.35rem;
+    --sidebar: oklch(0.1684 0 0);
+    --sidebar-foreground: oklch(0.9702 0 0);
+    --sidebar-primary: oklch(0.6333 0.0309 154.9039);
+    --sidebar-primary-foreground: oklch(1.0000 0 0);
+    --sidebar-accent: oklch(0.2178 0 0);
+    --sidebar-accent-foreground: oklch(0.9702 0 0);
+    --sidebar-border: oklch(0.2850 0 0);
+    --sidebar-ring: oklch(0.6333 0.0309 154.9039);
+    --font-sans: Antic, ui-sans-serif, sans-serif, system-ui;
+    --font-serif: Signifier, Georgia, serif;
+    --font-mono: JetBrains Mono, Courier New, monospace;
+    --shadow-color: #000000;
+    --shadow-opacity: 0.04;
+    --shadow-blur: 2px;
+    --shadow-spread: 0px;
+    --shadow-offset-x: 0px;
+    --shadow-offset-y: 1px;
+    --letter-spacing: 0em;
+    --spacing: 0.23rem;
+    --shadow-2xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.02);
+    --shadow-xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.02);
+    --shadow-sm: 0px 1px 2px 0px hsl(0 0% 0% / 0.04), 0px 1px 2px -1px hsl(0 0% 0% / 0.04);
+    --shadow: 0px 1px 2px 0px hsl(0 0% 0% / 0.04), 0px 1px 2px -1px hsl(0 0% 0% / 0.04);
+    --shadow-md: 0px 1px 2px 0px hsl(0 0% 0% / 0.04), 0px 2px 4px -1px hsl(0 0% 0% / 0.04);
+    --shadow-lg: 0px 1px 2px 0px hsl(0 0% 0% / 0.04), 0px 4px 6px -1px hsl(0 0% 0% / 0.04);
+    --shadow-xl: 0px 1px 2px 0px hsl(0 0% 0% / 0.04), 0px 8px 10px -1px hsl(0 0% 0% / 0.04);
+    --shadow-2xl: 0px 1px 2px 0px hsl(0 0% 0% / 0.10);
+    --color-ink: #f8fafc;
+    --color-bureau: #1e293b;
+    --color-bureau-light: #334155;
+    --color-parchment: oklch(0.1448 0 0);
+    --color-parchment-dim: oklch(0.1822 0 0);
+    --color-brass: #f59e0b;
+    --color-verified: #22c55e;
+    --color-verified-dim: rgba(34, 197, 94, 0.15);
+    --color-crimson: #ef4444;
+    --color-crimson-dim: rgba(239, 68, 68, 0.15);
+}
+
+@layer base {
+  html {
+    overflow-x: hidden;
+    max-width: 100vw;
+    width: 100%;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--background);
+    color: var(--foreground);
+    letter-spacing: var(--tracking-normal);
+    overflow-x: hidden;
+    max-width: 100vw;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  #root {
+    min-height: 100dvh;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Standard CSS Scrollbar for Firefox and modern Chromium/Safari */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklab, var(--muted-foreground) 35%, transparent) transparent;
+  }
+
+  /* WebKit and Chromium based browsers (Chrome, Edge, Safari, Opera) */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: color-mix(in oklab, var(--muted-foreground) 30%, transparent);
+    border-radius: 9999px;
+    transition: background-color 0.2s ease;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in oklab, var(--primary) 75%, transparent);
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+}
+
+/* Custom Scrollbar Utilities */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--muted-foreground) 35%, transparent);
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: -1;
+}
+
+::view-transition-new(root) {
+  z-index: 9999;
+}
+
+/* Password-recovery forms shown inside the shared glass authentication layout. */
+.auth-recovery-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.auth-recovery-form label {
+  display: block;
+  margin-bottom: 0.375rem;
+  color: color-mix(in oklab, var(--foreground) 88%, transparent);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.auth-recovery-form input {
+  width: 100%;
+  height: 2.5rem;
+  border: 1px solid color-mix(in oklab, white 24%, transparent);
+  border-radius: 0.5rem;
+  background: color-mix(in oklab, var(--background) 50%, transparent);
+  padding: 0 0.75rem;
+  color: var(--foreground);
+  box-shadow: var(--shadow-xs);
+  transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+
+.auth-recovery-form input::placeholder {
+  color: var(--muted-foreground);
+}
+
+.auth-recovery-form input:focus {
+  border-color: var(--primary);
+  background: var(--background);
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 28%, transparent);
+}
+
+.auth-recovery-form > button {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  box-shadow: var(--shadow-md);
+  transition: transform 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+}
+
+.auth-recovery-form > button:hover:not(:disabled) {
+  background: color-mix(in oklab, var(--primary) 88%, black);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.auth-recovery-form > button:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+
+.auth-recovery-form > button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.auth-recovery-form__email {
+  margin-bottom: 0.25rem;
+}
+
+.auth-recovery-form__email p {
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+}
+
+.auth-recovery-form__email h2 {
+  margin-top: 0.25rem;
+  overflow-wrap: anywhere;
+  color: var(--primary);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .auth-recovery-form {
+    gap: 0.875rem;
+  }
+}
+/* ---------------------------------------------------------------
+   Verification Bureau design tokens
+   A calm, official "document office" identity: deep bureau navy,
+   parchment paper, and a brass seal accent used for the scanning
+   sweep and stamp. Kept separate from the app's default blue so the
+   KYC flow reads as a dedicated, trustworthy checkpoint.
+------------------------------------------------------------------ */
+@theme {
+  --font-display: "Fraunces", "Iowan Old Style", serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --color-ink: var(--color-ink);
+  --color-bureau: var(--color-bureau);
+  --color-bureau-light: var(--color-bureau-light);
+  --color-parchment: var(--color-parchment);
+  --color-parchment-dim: var(--color-parchment-dim);
+  --color-brass: var(--color-brass);
+  --color-verified: var(--color-verified);
+  --color-verified-dim: var(--color-verified-dim);
+  --color-crimson: var(--color-crimson);
+  --color-crimson-dim: var(--color-crimson-dim);
+}
+
+.verification-flow {
+  font-family: var(--font-body);
+  background-color: var(--color-parchment);
+  color: var(--color-ink);
+  min-height: 100vh;
+}
+
+.dark .verification-flow {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* Subtle paper grain so cards don't read as flat digital panels */
+.paper-grain {
+  position: relative;
+}
+.paper-grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image: radial-gradient(rgba(11, 18, 32, 0.045) 1px, transparent 1px);
+  background-size: 3px 3px;
+  border-radius: inherit;
+}
+.dark .paper-grain::before {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+}
+
+/* Scanner viewfinder corner brackets */
+.reticle-corner {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border-color: var(--color-brass);
+}
+
+/* Laser scan sweep, used while a document is being verified */
+@keyframes scan-sweep {
+  0% {
+    top: 2%;
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  100% {
+    top: 96%;
+    opacity: 0;
+  }
+}
+.animate-scan-sweep {
+  animation: scan-sweep 2.4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@keyframes scan-grid-fade {
+  0%,
+  100% {
+    opacity: 0.12;
+  }
+  50% {
+    opacity: 0.28;
+  }
+}
+.animate-scan-grid {
+  animation: scan-grid-fade 2.4s ease-in-out infinite;
+}
+
+/* Stamp slam-down, used when a verdict (verified/rejected) lands */
+@keyframes stamp-slam {
+  0% {
+    transform: scale(2.6) rotate(-14deg);
+    opacity: 0;
+  }
+  55% {
+    transform: scale(0.94) rotate(-6deg);
+    opacity: 1;
+  }
+  72% {
+    transform: scale(1.06) rotate(-8deg);
+  }
+  100% {
+    transform: scale(1) rotate(-7deg);
+    opacity: 1;
+  }
+}
+.animate-stamp-slam {
+  animation: stamp-slam 0.55s cubic-bezier(0.2, 0.8, 0.3, 1.2) both;
+}
+
+@keyframes stamp-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(30, 127, 77, 0.35);
+  }
+  100% {
+    box-shadow: 0 0 0 14px rgba(30, 127, 77, 0);
+  }
+}
+.animate-stamp-ring {
+  animation: stamp-ring 1s ease-out both;
+}
+@keyframes stamp-ring-rejected {
+  0% {
+    box-shadow: 0 0 0 0 rgba(179, 38, 30, 0.35);
+  }
+  100% {
+    box-shadow: 0 0 0 14px rgba(179, 38, 30, 0);
+  }
+}
+.animate-stamp-ring-rejected {
+  animation: stamp-ring-rejected 1s ease-out both;
+}
+
+/* SmartBike Custom Theme Toaster Styling */
+.smartbike-toast {
+  background-color: var(--card) !important;
+  color: var(--foreground) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 1.25rem !important;
+  padding: 12px 18px !important;
+  font-family: var(--font-sans) !important;
+  font-size: 0.85rem !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em !important;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.12), 0 4px 12px -2px rgba(0, 0, 0, 0.08) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+.dark .smartbike-toast {
+  background-color: rgba(24, 28, 38, 0.95) !important;
+  color: #f3f4f6 !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 12px 35px -5px rgba(0, 0, 0, 0.5) !important;
+}

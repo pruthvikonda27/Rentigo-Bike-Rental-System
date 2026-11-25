@@ -1,0 +1,33 @@
+export interface Booking {
+  bookingId: number;
+  bikeId: number;
+  customerId: number;
+  bookingReference: string;
+  startTime: string;
+  returnTime: string;
+  totalDays: number;
+  totalAmount: number;
+  rentalAmount?: number;
+  bookingStatus: string;
+  paymentStatus: string;
+  bookingDate: string;
+  createdAt?: string;
+  qrCode?: string;
+  bikeName?: string;
+  bikeImage?: string;
+  customerName?: string;
+  registrationNumber?: string;
+  ownerId?: number;
+  ownerName?: string;
+  actualPickupTime?: string;
+  actualReturnTime?: string;
+  cancellationReason?: string;
+  cancelledBy?: string;
+  cancelledAt?: string;
+}
+
+export interface BookingRequest {
+  bikeId: number;
+  startTime: string;
+  returnTime: string;
+}
